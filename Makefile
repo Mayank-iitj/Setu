@@ -1,28 +1,31 @@
-.PHONY: all up down seed simulate dev setup
+.PHONY: setup dev api web test bench down clean
+
+VENV := ./venv/bin
 
 setup:
-	cp .env.example .env
-	python -m venv venv
-	./venv/Scripts/pip install -r backend/requirements.txt
+	cp -n .env.example .env || true
+	python3 -m venv venv
+	$(VENV)/pip install --upgrade pip
+	$(VENV)/pip install -r backend/requirements.txt
 	cd frontend && npm install
 
-up:
-	docker compose up -d
+api:
+	$(VENV)/uvicorn backend.src.main:app --reload --port 8000
+
+web:
+	cd frontend && npm run dev
+
+dev:
+	@echo "Run 'make api' and 'make web' in two terminals."
+
+test:
+	$(VENV)/pytest backend/tests
+
+bench:
+	$(VENV)/python -m backend.src.engine.benchmarks.cli C101
 
 down:
 	docker compose down -v
 
-seed:
-	@echo "Seeding synthetic network..."
-	./venv/Scripts/python scripts/seed.py
-
-simulate:
-	@echo "Starting simulator..."
-	./venv/Scripts/python scripts/simulate.py
-
-dev:
-	@echo "Starting development servers..."
-	# In windows, we can run them in background or use a runner like honcho/foreman.
-	# For simplicity here we just print instructions or run them sequentially.
-	start ./venv/Scripts/uvicorn backend.src.main:app --reload --port 8000
-	cd frontend && start npm run dev
+clean:
+	rm -rf venv frontend/node_modules
