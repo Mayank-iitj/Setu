@@ -1,6 +1,6 @@
 """Anytime CVRPTW solver built on OR-Tools routing.
 
-Search: PATH_CHEAPEST_ARC for a first solution, then GUIDED_LOCAL_SEARCH until
+Search: PARALLEL_CHEAPEST_INSERTION for a first solution, then GUIDED_LOCAL_SEARCH until
 the time budget expires, returning the best solution found so far. Anytime by
 construction — a caller with 200ms and a caller with 30s both get an answer.
 
@@ -78,7 +78,13 @@ def solve(req: SolveRequest) -> Solution | None:
 
     params = pywrapcp.DefaultRoutingSearchParameters()
     params.first_solution_strategy = (
-        routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
+        # PARALLEL_CHEAPEST_INSERTION, not PATH_CHEAPEST_ARC. The greedy nearest-arc
+        # construction cannot build a feasible first solution when time windows are
+        # narrow (~10 units on Solomon R1/RC1) and returns nothing at all, even at a
+        # 60s budget. Insertion heuristics schedule against the windows as they build.
+        # Measured: R101 19 vehicles / +0.17% and RC101 solved, both unsolvable before;
+        # C101 unchanged at +0.01%.
+        routing_enums_pb2.FirstSolutionStrategy.PARALLEL_CHEAPEST_INSERTION
     )
     params.local_search_metaheuristic = (
         routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
