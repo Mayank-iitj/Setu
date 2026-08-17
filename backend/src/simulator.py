@@ -81,7 +81,7 @@ def _haversine_km(lat1, lon1, lat2, lon2) -> float:
 
 def _init_vehicles():
     vehicles.clear()
-    for i in range(40):
+    for i in range(200):
         src = random.choice(HUB_NAMES)
         dst = random.choice([h for h in HUB_NAMES if h != src])
         carrier = random.choice(CARRIERS)
@@ -166,6 +166,51 @@ def _add_event(type_: str, message: str, color: str):
     if len(recent_events) > 50:
         recent_events.pop()
     return evt
+
+# ── Disruption API Handlers ───────────────────────────────────────────────────
+
+def break_vehicle(vehicle_id: str):
+    veh = next((v for v in vehicles if v["id"] == vehicle_id), None)
+    if not veh:
+        # Fallback: break a random one if ID not found
+        veh = random.choice(vehicles)
+    veh["status"] = "breakdown"
+    veh["speed"] = 0.0 # stopped
+    _add_event("disruption", f"CRITICAL: Vehicle {veh['id']} broken down on {veh['route_from']}→{veh['route_to']}. Re-routing network...", "red")
+    
+    # Reroute nearby vehicles
+    for v in vehicles:
+        if v["id"] != veh["id"] and v["status"] == "empty" and v["route_to"] == veh["route_to"]:
+            v["status"] = "en_route"
+            v["speed"] *= 1.5 # hurry
+            _add_event("system", f"Dispatching {v['id']} to recover load from {veh['id']}.", "yellow")
+            break
+
+def close_corridor(hub_a: str, hub_b: str):
+    _add_event("disruption", f"ALERT: Corridor {hub_a} ↔ {hub_b} closed due to accident. Re-planning active routes...", "red")
+    affected = 0
+    for v in vehicles:
+        if (v["route_from"] == hub_a and v["route_to"] == hub_b) or (v["route_from"] == hub_b and v["route_to"] == hub_a):
+            # Divert to a different hub
+            new_dst = random.choice([h for h in HUB_NAMES if h not in (hub_a, hub_b)])
+            v["route_to"] = new_dst
+            v["progress"] = 0.0
+            v["route_from"] = "DIVERSION"
+            affected += 1
+    if affected > 0:
+         _add_event("system", f"Diverted {affected} vehicles away from closed corridor.", "yellow")
+
+def inject_order(origin: str, dest: str, weight: float, material: str):
+    _add_event("system", f"URGENT INJECTION: {weight}T of {material} {origin}→{dest}. Forcing auction...", "accent")
+    # Add to current round immediately
+    bundle = ExchangeBundle(
+        bundle_id=f"BND-URGENT-{random.randint(1000, 9999)}",
+        requests=["SHP-URGENT"],
+        min_price=round(random.uniform(30000, 90000), 2),
+        awarded_to=None,
+    )
+    current_round["bundles"].insert(0, bundle)
+    current_round["seconds_remaining"] = min(current_round["seconds_remaining"], 5)
 
 # ── Startup initializer ───────────────────────────────────────────────────────
 

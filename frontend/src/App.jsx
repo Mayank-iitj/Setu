@@ -9,6 +9,7 @@ import ContactPage from './pages/ContactPage';
 import DocsPage from './pages/DocsPage';
 import BenchmarkPage from './pages/BenchmarkPage';
 import ProofPage from './pages/ProofPage';
+import TrackingPage from './pages/TrackingPage';
 
 import { AuthProvider } from './contexts/AuthContext';
 import { PrivateRoute } from './components/PrivateRoute';
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/docs" element={<DocsPage />} />
           <Route path="/benchmark" element={<BenchmarkPage />} />
           <Route path="/proof" element={<ProofPage />} />
+          <Route path="/track/:id" element={<TrackingPage />} />
           
           {/* Protected Role Selection Route */}
           <Route path="/select-role" element={

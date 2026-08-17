@@ -4,7 +4,7 @@ import { ScatterplotLayer, ArcLayer } from '@deck.gl/layers';
 import Map from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, TrendingUp, Truck, Zap, Activity, Wifi, WifiOff, FileCheck, ScanLine, ShieldCheck, Settings, Network, BarChart2, PieChart as PieIcon, LineChart as LineIcon } from 'lucide-react';
+import { MapPin, TrendingUp, Truck, Zap, Activity, Wifi, WifiOff, FileCheck, ScanLine, ShieldCheck, Settings, Network, BarChart2, PieChart as PieIcon, LineChart as LineIcon, AlertTriangle } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';
 
@@ -12,6 +12,8 @@ import Navbar from '../components/Navbar';
 import BorderGlow from '../components/landing/BorderGlow';
 import GlowingButton from '../components/GlowingButton';
 import { useSetuWebSocket } from '../hooks/useWebSocket';
+
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const DEMO_HUBS = [
   "Ahmedabad - Sanand Hub", "Delhi NCR - Gurugram", "Surat - Hazira Port", "Vadodara - GSFC",
@@ -186,11 +188,13 @@ export default function Dashboard() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Fetch compliance data from real NestJS APIs
-      const [vahanRes, aisRes, fastagRes] = await Promise.all([
-        fetch('http://localhost:3000/integrations/vahan/verify?vehicleNumber=RJ14GC1234').catch(() => null),
-        fetch('http://localhost:3000/integrations/ais140/location?vehicleId=v-1234').catch(() => null),
-        fetch('http://localhost:3000/integrations/fastag/status?vehicleId=v-1234').catch(() => null)
+      const results = await Promise.all([
+        fetch(`${API_BASE}/api/integrations/vahan/verify?vehicleNumber=RJ14GC1234`).catch(() => null),
+        fetch(`${API_BASE}/api/integrations/ais140/location?vehicleId=v-1234`).catch(() => null),
+        fetch(`${API_BASE}/api/integrations/fastag/status?vehicleId=v-1234`).catch(() => null)
       ]);
+
+      const [vahanRes, aisRes, fastagRes] = results;
 
       const vahan = vahanRes?.ok ? await vahanRes.json() : { status: 'VALID (Fallback)', details: 'National Permit' };
       const ais = aisRes?.ok ? await aisRes.json() : { speed: 45, status: 'TRACKING' };
@@ -479,6 +483,91 @@ export default function Dashboard() {
   };
 
   const renderLeftPanel = () => {
+    if (location.pathname === '/app/disruptions') {
+      return (
+        <div className="col-span-12 lg:col-span-4 flex flex-col gap-6 pointer-events-auto overflow-y-auto pb-10 custom-scrollbar" style={{ maxHeight: 'calc(100vh - 120px)' }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-2 font-display bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-red-600">
+              Chaos Engine
+            </h1>
+            <p className="text-brand-text-muted mb-4 leading-relaxed text-sm">
+              Inject disruptions to test the network's autonomous recovery and real-time combinatorial re-planning capabilities.
+            </p>
+          </motion.div>
+          <BorderGlow glowColor="255 100 100" backgroundColor="#000000" glowIntensity={0.8}>
+            <div className="p-6 space-y-8">
+              
+              {/* Breakdown */}
+              <div className="space-y-4 border-b border-brand-border pb-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/20"><AlertTriangle className="text-red-400 w-5 h-5" /></div>
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">Simulate Breakdown</h3>
+                </div>
+                <p className="text-xs text-brand-text-muted">Forces a random active vehicle to stop. The AI will immediately dispatch the nearest empty vehicle to recover the load.</p>
+                <GlowingButton 
+                  className="w-full text-sm py-3 font-bold !bg-red-500/20 !border-red-500/50 hover:!bg-red-500/40 text-red-100"
+                  onClick={() => fetch(`${API_BASE}/api/disruption/breakdown`, { method: 'POST', body: '{}', headers: {'Content-Type': 'application/json'} })}
+                >
+                  Break Down Vehicle
+                </GlowingButton>
+              </div>
+
+              {/* Corridor Close */}
+              <div className="space-y-4 border-b border-brand-border pb-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 bg-yellow-500/10 rounded-lg border border-yellow-500/20"><ScanLine className="text-yellow-400 w-5 h-5" /></div>
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">Close Corridor</h3>
+                </div>
+                <p className="text-xs text-brand-text-muted">Blocks a major route. All vehicles en route will dynamically re-route to an alternate hub.</p>
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  <select id="close_hub_a" className="bg-brand-surface border border-brand-border rounded-lg px-2 py-2 text-xs text-white outline-none">
+                    {DEMO_HUBS.map(h => <option key={`a-${h}`}>{h}</option>)}
+                  </select>
+                  <select id="close_hub_b" className="bg-brand-surface border border-brand-border rounded-lg px-2 py-2 text-xs text-white outline-none" defaultValue={DEMO_HUBS[1]}>
+                    {DEMO_HUBS.map(h => <option key={`b-${h}`}>{h}</option>)}
+                  </select>
+                </div>
+                <GlowingButton 
+                  className="w-full text-sm py-3 font-bold !bg-yellow-500/20 !border-yellow-500/50 hover:!bg-yellow-500/40 text-yellow-100"
+                  onClick={() => {
+                    const a = document.getElementById('close_hub_a').value;
+                    const b = document.getElementById('close_hub_b').value;
+                    fetch(`${API_BASE}/api/disruption/close-corridor`, { 
+                      method: 'POST', 
+                      body: JSON.stringify({ hub_a: a.split(' - ')[0], hub_b: b.split(' - ')[0] }), 
+                      headers: {'Content-Type': 'application/json'} 
+                    });
+                  }}
+                >
+                  Close Corridor
+                </GlowingButton>
+              </div>
+
+              {/* Urgent Injection */}
+              <div className="space-y-4 pb-2">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 bg-brand-primary/10 rounded-lg border border-brand-primary/20"><Zap className="text-brand-primary w-5 h-5" /></div>
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">Urgent Load Injection</h3>
+                </div>
+                <p className="text-xs text-brand-text-muted">Injects a high-priority, high-paying load directly into the live combinatorial exchange. Bidding starts immediately.</p>
+                <GlowingButton 
+                  className="w-full text-sm py-3 font-bold !bg-brand-primary/20 !border-brand-primary/50 hover:!bg-brand-primary/40 text-brand-primary"
+                  onClick={() => fetch(`${API_BASE}/api/disruption/inject-order`, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ origin: 'Surat', destination: 'Delhi NCR', weight: 14.5, material: 'Pharmaceuticals' }), 
+                    headers: {'Content-Type': 'application/json'} 
+                  })}
+                >
+                  Inject Urgent Load (Surat → Delhi)
+                </GlowingButton>
+              </div>
+
+            </div>
+          </BorderGlow>
+        </div>
+      );
+    }
+
     if (location.pathname === '/app/security') {
       return (
         <div className="col-span-12 lg:col-span-4 flex flex-col gap-6 pointer-events-auto overflow-y-auto pb-10 custom-scrollbar" style={{ maxHeight: 'calc(100vh - 120px)' }}>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Network, Activity, Settings, User, LogOut, Shield, CheckCircle, BarChart2 } from 'lucide-react';
+import { Network, Activity, Settings, User, LogOut, Shield, CheckCircle, BarChart2, AlertTriangle } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import GlowingButton from './GlowingButton';
 import { useAuth } from '../contexts/AuthContext';
@@ -25,6 +25,7 @@ export default function Navbar() {
     { name: 'Live Console', path: '/app', icon: Activity },
     { name: 'Exchange', path: '/app/exchange', icon: Network },
     { name: 'Analytics', path: '/app/analytics', icon: BarChart2 },
+    { name: 'Disruptions', path: '/app/disruptions', icon: AlertTriangle },
     { name: 'Config', path: '/app/config', icon: Settings },
   ];
 
