@@ -17,9 +17,14 @@ import Login from './pages/Login';
 import CarrierDashboard from './pages/CarrierDashboard';
 import { setAuthToken } from './lib/api';
 
+// Auth is optional (see main.jsx). Without a Clerk key there is no ClerkProvider,
+// and calling useAuth() would throw and take down every page — including the
+// public evidence pages that need no login. Rendered only when Clerk is configured.
+export const CLERK_ENABLED = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
+
 function TokenManager() {
   const { getToken } = useAuth();
-  
+
   useEffect(() => {
     getToken().then(token => setAuthToken(token));
   }, [getToken]);
@@ -30,7 +35,7 @@ function TokenManager() {
 export default function App() {
   return (
     <AuthProvider>
-      <TokenManager />
+      {CLERK_ENABLED && <TokenManager />}
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
