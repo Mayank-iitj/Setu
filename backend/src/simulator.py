@@ -5,13 +5,34 @@ Updates vehicle positions every 2 seconds and runs exchange rounds every 30 seco
 Broadcasts live events to all connected WebSocket clients.
 """
 import asyncio
+import json
 import random
 import time
 import math
-from typing import List, Set, Dict, Any
+from pathlib import Path
+from typing import List, Set, Dict, Any, Optional
 from fastapi import WebSocket
 
 from .models import VehiclePosition, FleetStats, ExchangeRound, ExchangeBundle, LiveEvent, ShipmentItem
+
+# ── Real settlement data (Plan 1) ───────────────────────────────────────────
+# The dashboard's headline surplus/Shapley figures used to be a random walk.
+# When the precomputed ablation payload is available, load it once and use
+# its real settlement numbers instead — otherwise fall back to the old
+# synthetic constants and flag the stats as simulated.
+
+_ABLATION_PATH = Path(__file__).resolve().parents[2] / "data" / "demo" / "ablation.json"
+
+
+def _load_ablation() -> Optional[dict]:
+    """Loads data/demo/ablation.json once. Returns None if absent — never crashes."""
+    if not _ABLATION_PATH.exists():
+        return None
+    try:
+        with _ABLATION_PATH.open() as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return None
 
 # ── Constants ────────────────────────────────────────────────────────────────
 
@@ -120,6 +141,18 @@ def _init_stats():
         "carriers_connected": len(CARRIERS),
     })
 
+    payload = _load_ablation()
+    if payload is not None:
+        stats["total_surplus_inr"] = float(payload["routing_saving"])
+        carrier_0 = next(
+            (c for c in payload["carriers"] if c["carrier_id"] == "carrier_0"), None
+        )
+        if carrier_0 is not None:
+            stats["your_shapley_share_inr"] = float(carrier_0["shapley_share"])
+        stats["simulated"] = False
+    else:
+        stats["simulated"] = True
+
 def _recompute_stats():
     en_route = sum(1 for v in vehicles if v["status"] == "en_route")
     empty = sum(1 for v in vehicles if v["status"] == "empty")
@@ -180,9 +213,6 @@ async def simulation_loop():
                 msg = f"Vehicle {v['id']} arrived at {old_dst}"
                 events_this_tick.append(("arrival", msg, "green"))
 
-                # Surplus tick
-                stats["total_surplus_inr"] += random.uniform(800, 3500)
-                stats["your_shapley_share_inr"] += random.uniform(100, 600)
                 stats["shipments_processed"] += random.randint(0, 2)
             else:
                 # Interpolate position
@@ -232,6 +262,7 @@ async def simulation_loop():
                 "active_round": stats["active_round"],
                 "shipments_processed": stats["shipments_processed"],
                 "carriers_connected": stats["carriers_connected"],
+                "simulated": stats.get("simulated", False),
             },
             "round": {
                 "round_id": current_round["round_id"],

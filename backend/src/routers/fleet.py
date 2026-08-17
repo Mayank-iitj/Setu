@@ -17,6 +17,7 @@ async def get_stats():
         active_round=s["active_round"],
         shipments_processed=s["shipments_processed"],
         carriers_connected=s["carriers_connected"],
+        simulated=s.get("simulated", False),
     )
 
 
