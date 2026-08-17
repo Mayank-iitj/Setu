@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-brand-surface: #121414;
+  --color-brand-surface-dim: #121414;
+  --color-brand-surface-bright: #37393a;
+  --color-brand-background: #121414;
+  --color-brand-deep-space: #000000;
+  --color-brand-surface-muted: #171717;
+  
+  --color-brand-primary: #7E72E7;
+  --color-brand-accent-start: #7E72E7;
+  --color-brand-accent-end: #2D1B69;
+  
+  --color-brand-text-primary: #ffffff;
+  --color-brand-text-secondary: #F5F5F5;
+  --color-brand-text-muted: #a3a3a3;
+  
+  --color-brand-border: rgba(255, 255, 255, 0.1);
+  
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Sora', sans-serif;
+  
+  --radius-sm: 0.25rem;
+  --radius-DEFAULT: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-brand-deep-space);
+    color: var(--color-brand-text-secondary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    color: var(--color-brand-text-primary);
+    letter-spacing: -0.025em;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-brand-surface-muted/80 backdrop-blur-xl border border-brand-border rounded-xl;
+  }
+  
+  .ghost-border {
+    @apply border border-white/10;
+  }
+  
+  .button-primary {
+    @apply bg-white text-black px-6 py-3 rounded-full font-medium shadow-none transition-transform;
+  }
+  
+  .button-secondary {
+    @apply bg-transparent text-white px-6 py-3 rounded-full font-medium border border-brand-primary/30 transition-colors hover:bg-brand-primary/10;
+  }
+  
+  .custom-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
