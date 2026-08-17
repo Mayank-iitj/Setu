@@ -13,6 +13,7 @@ from .routers.proof import router as proof_router
 from .routers.integrations import router as integrations_router
 from .routers.disruption import router as disruption_router
 from .routers.tracking import router as tracking_router
+from .auth import verify_ws_session
 
 
 @asynccontextmanager
@@ -70,7 +71,13 @@ async def health_check():
 
 # ── WebSocket ─────────────────────────────────────────────────────────────────
 @app.websocket("/ws/events")
-async def websocket_events(websocket: WebSocket):
+async def websocket_endpoint(websocket: WebSocket, token: str = None):
+    try:
+        verify_ws_session(token)
+    except ValueError as e:
+        await websocket.close(code=1008)
+        return
+
     await websocket.accept()
     simulator.active_connections.add(websocket)
 

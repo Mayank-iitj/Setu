@@ -1,9 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 import random
 from .. import simulator
+from ..auth import verify_session
 from ..models import ExchangeRound, BidRequest, BidResponse
 
-router = APIRouter(prefix="/api/exchange", tags=["exchange"])
+router = APIRouter(prefix="/api/exchange", tags=["exchange"], dependencies=[Depends(verify_session)])
 
 
 @router.get("/round", response_model=ExchangeRound)

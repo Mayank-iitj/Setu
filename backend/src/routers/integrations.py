@@ -1,7 +1,9 @@
-from fastapi import APIRouter
-from typing import Optional
+from fastapi import APIRouter, Depends
+import random
+import time
+from ..auth import verify_session
 
-router = APIRouter(prefix="/api/integrations", tags=["integrations"])
+router = APIRouter(prefix="/api/integrations", tags=["integrations"], dependencies=[Depends(verify_session)])
 
 @router.get("/vahan/verify")
 async def verify_vahan(vehicleNumber: str):

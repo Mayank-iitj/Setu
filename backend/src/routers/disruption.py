@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Body
 from pydantic import BaseModel
 from typing import Optional
+from fastapi import Depends
 from .. import simulator
+from ..auth import verify_session
 
-router = APIRouter(prefix="/api/disruption", tags=["disruption"])
+router = APIRouter(prefix="/api/disruption", tags=["disruption"], dependencies=[Depends(verify_session)])
 
 class VehicleBreakdownReq(BaseModel):
     vehicle_id: Optional[str] = None
