@@ -4,7 +4,6 @@ services:
     env: docker
     dockerfilePath: ./backend/Dockerfile
     envVars:
-    envVars:
       - key: PYTHON_VERSION
         value: 3.10.0
 
