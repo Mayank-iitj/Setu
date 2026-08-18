@@ -5,13 +5,34 @@ Updates vehicle positions every 2 seconds and runs exchange rounds every 30 seco
 Broadcasts live events to all connected WebSocket clients.
 """
 import asyncio
+import json
 import random
 import time
 import math
-from typing import List, Set, Dict, Any
+from pathlib import Path
+from typing import List, Set, Dict, Any, Optional
 from fastapi import WebSocket
 
 from .models import VehiclePosition, FleetStats, ExchangeRound, ExchangeBundle, LiveEvent, ShipmentItem
+
+# ── Real settlement data (Plan 1) ───────────────────────────────────────────
+# The dashboard's headline surplus/Shapley figures used to be a random walk.
+# When the precomputed ablation payload is available, load it once and use
+# its real settlement numbers instead — otherwise fall back to the old
+# synthetic constants and flag the stats as simulated.
+
+_ABLATION_PATH = Path(__file__).resolve().parents[2] / "data" / "demo" / "ablation.json"
+
+
+def _load_ablation() -> Optional[dict]:
+    """Loads data/demo/ablation.json once. Returns None if absent — never crashes."""
+    if not _ABLATION_PATH.exists():
+        return None
+    try:
+        with _ABLATION_PATH.open() as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return None
 
 # ── Constants ────────────────────────────────────────────────────────────────
 
@@ -60,7 +81,7 @@ def _haversine_km(lat1, lon1, lat2, lon2) -> float:
 
 def _init_vehicles():
     vehicles.clear()
-    for i in range(40):
+    for i in range(200):
         src = random.choice(HUB_NAMES)
         dst = random.choice([h for h in HUB_NAMES if h != src])
         carrier = random.choice(CARRIERS)
@@ -120,6 +141,18 @@ def _init_stats():
         "carriers_connected": len(CARRIERS),
     })
 
+    payload = _load_ablation()
+    if payload is not None:
+        stats["total_surplus_inr"] = float(payload["routing_saving"])
+        carrier_0 = next(
+            (c for c in payload["carriers"] if c["carrier_id"] == "carrier_0"), None
+        )
+        if carrier_0 is not None:
+            stats["your_shapley_share_inr"] = float(carrier_0["shapley_share"])
+        stats["simulated"] = False
+    else:
+        stats["simulated"] = True
+
 def _recompute_stats():
     en_route = sum(1 for v in vehicles if v["status"] == "en_route")
     empty = sum(1 for v in vehicles if v["status"] == "empty")
@@ -133,6 +166,51 @@ def _add_event(type_: str, message: str, color: str):
     if len(recent_events) > 50:
         recent_events.pop()
     return evt
+
+# ── Disruption API Handlers ───────────────────────────────────────────────────
+
+def break_vehicle(vehicle_id: str):
+    veh = next((v for v in vehicles if v["id"] == vehicle_id), None)
+    if not veh:
+        # Fallback: break a random one if ID not found
+        veh = random.choice(vehicles)
+    veh["status"] = "breakdown"
+    veh["speed"] = 0.0 # stopped
+    _add_event("disruption", f"CRITICAL: Vehicle {veh['id']} broken down on {veh['route_from']}→{veh['route_to']}. Re-routing network...", "red")
+    
+    # Reroute nearby vehicles
+    for v in vehicles:
+        if v["id"] != veh["id"] and v["status"] == "empty" and v["route_to"] == veh["route_to"]:
+            v["status"] = "en_route"
+            v["speed"] *= 1.5 # hurry
+            _add_event("system", f"Dispatching {v['id']} to recover load from {veh['id']}.", "yellow")
+            break
+
+def close_corridor(hub_a: str, hub_b: str):
+    _add_event("disruption", f"ALERT: Corridor {hub_a} ↔ {hub_b} closed due to accident. Re-planning active routes...", "red")
+    affected = 0
+    for v in vehicles:
+        if (v["route_from"] == hub_a and v["route_to"] == hub_b) or (v["route_from"] == hub_b and v["route_to"] == hub_a):
+            # Divert to a different hub
+            new_dst = random.choice([h for h in HUB_NAMES if h not in (hub_a, hub_b)])
+            v["route_to"] = new_dst
+            v["progress"] = 0.0
+            v["route_from"] = "DIVERSION"
+            affected += 1
+    if affected > 0:
+         _add_event("system", f"Diverted {affected} vehicles away from closed corridor.", "yellow")
+
+def inject_order(origin: str, dest: str, weight: float, material: str):
+    _add_event("system", f"URGENT INJECTION: {weight}T of {material} {origin}→{dest}. Forcing auction...", "accent")
+    # Add to current round immediately
+    bundle = ExchangeBundle(
+        bundle_id=f"BND-URGENT-{random.randint(1000, 9999)}",
+        requests=["SHP-URGENT"],
+        min_price=round(random.uniform(30000, 90000), 2),
+        awarded_to=None,
+    )
+    current_round["bundles"].insert(0, bundle)
+    current_round["seconds_remaining"] = min(current_round["seconds_remaining"], 5)
 
 # ── Startup initializer ───────────────────────────────────────────────────────
 
@@ -180,9 +258,6 @@ async def simulation_loop():
                 msg = f"Vehicle {v['id']} arrived at {old_dst}"
                 events_this_tick.append(("arrival", msg, "green"))
 
-                # Surplus tick
-                stats["total_surplus_inr"] += random.uniform(800, 3500)
-                stats["your_shapley_share_inr"] += random.uniform(100, 600)
                 stats["shipments_processed"] += random.randint(0, 2)
             else:
                 # Interpolate position
@@ -232,6 +307,7 @@ async def simulation_loop():
                 "active_round": stats["active_round"],
                 "shipments_processed": stats["shipments_processed"],
                 "carriers_connected": stats["carriers_connected"],
+                "simulated": stats.get("simulated", False),
             },
             "round": {
                 "round_id": current_round["round_id"],

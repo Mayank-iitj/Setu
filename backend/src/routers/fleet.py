@@ -1,9 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from typing import List
 from .. import simulator
+from ..auth import verify_session
 from ..models import FleetStats, VehiclePosition, ShipmentItem
 
-router = APIRouter(prefix="/api", tags=["fleet"])
+router = APIRouter(prefix="/api", tags=["fleet"], dependencies=[Depends(verify_session)])
 
 
 @router.get("/stats", response_model=FleetStats)
@@ -17,6 +18,7 @@ async def get_stats():
         active_round=s["active_round"],
         shipments_processed=s["shipments_processed"],
         carriers_connected=s["carriers_connected"],
+        simulated=s.get("simulated", False),
     )
 
 

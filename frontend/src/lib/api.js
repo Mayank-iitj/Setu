@@ -40,6 +40,23 @@ export const submitBid = (bid) =>
 export const submitContact = (data) =>
   apiFetch('/api/contact', { method: 'POST', body: JSON.stringify(data) });
 
+// ── Benchmark ─────────────────────────────────────────────────────────────────
+export const getBenchmarkInstances = () => apiFetch('/api/benchmark/instances');
+export const runBenchmark = ({ instance, time_budget_ms = 8000 }) =>
+  apiFetch('/api/benchmark/run', {
+    method: 'POST',
+    body: JSON.stringify({ instance, time_budget_ms }),
+  });
+
+// ── Proof of collaboration ───────────────────────────────────────────────────
+export const getProofAblation = () => apiFetch('/api/proof/ablation');
+export const getProofAuction = () => apiFetch('/api/proof/auction');
+export const recomputeProof = ({ seed, budget_ms }) =>
+  apiFetch('/api/proof/recompute', {
+    method: 'POST',
+    body: JSON.stringify({ seed, budget_ms }),
+  });
+
 // ── WebSocket factory ─────────────────────────────────────────────────────────
 export function createEventSocket(onMessage, onError) {
   const url = authToken ? `${WS_URL}/ws/events?token=${authToken}` : `${WS_URL}/ws/events`;

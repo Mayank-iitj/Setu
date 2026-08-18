@@ -33,6 +33,7 @@ class FleetStats(BaseModel):
     active_round: int
     shipments_processed: int
     carriers_connected: int
+    simulated: bool = False
 
 class ShipmentItem(BaseModel):
     id: str
@@ -63,3 +64,27 @@ class BidResponse(BaseModel):
     status: str
     message: str
     bundle_id: str
+
+# ── Benchmark (Plan 1) ───────────────────────────────────────────────────────
+
+class BenchmarkInstanceInfo(BaseModel):
+    name: str
+    customers: int
+    bks_vehicles: Optional[int] = None
+    bks_distance: Optional[float] = None
+
+class BenchmarkRunRequest(BaseModel):
+    instance: str
+    time_budget_ms: int = 5000
+
+class BenchmarkRunResult(BaseModel):
+    instance: str
+    customers: int
+    vehicles_used: int
+    distance: float
+    bks_vehicles: Optional[int] = None
+    bks_distance: Optional[float] = None
+    gap_pct: Optional[float] = None
+    solve_time_ms: int
+    feasible: bool
+    violations: List[str] = []

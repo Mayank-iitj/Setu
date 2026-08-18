@@ -8,6 +8,12 @@ from . import simulator
 from .routers.fleet import router as fleet_router
 from .routers.exchange import router as exchange_router
 from .routers.contact import router as contact_router
+from .routers.benchmark import router as benchmark_router
+from .routers.proof import router as proof_router
+from .routers.integrations import router as integrations_router
+from .routers.disruption import router as disruption_router
+from .routers.tracking import router as tracking_router
+from .auth import verify_ws_session
 
 
 @asynccontextmanager
@@ -45,6 +51,11 @@ app.add_middleware(
 app.include_router(fleet_router)
 app.include_router(exchange_router)
 app.include_router(contact_router)
+app.include_router(benchmark_router)
+app.include_router(proof_router)
+app.include_router(integrations_router)
+app.include_router(disruption_router)
+app.include_router(tracking_router)
 
 
 # ── Health ────────────────────────────────────────────────────────────────────
@@ -60,7 +71,13 @@ async def health_check():
 
 # ── WebSocket ─────────────────────────────────────────────────────────────────
 @app.websocket("/ws/events")
-async def websocket_events(websocket: WebSocket):
+async def websocket_endpoint(websocket: WebSocket, token: str = None):
+    try:
+        verify_ws_session(token)
+    except ValueError as e:
+        await websocket.close(code=1008)
+        return
+
     await websocket.accept()
     simulator.active_connections.add(websocket)
 

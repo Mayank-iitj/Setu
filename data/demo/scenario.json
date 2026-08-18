@@ -1,0 +1,363 @@
+{
+  "carriers": [
+    {
+      "id": "carrier_0",
+      "name": "Gujarat Express",
+      "depot": "Ahmedabad",
+      "n_vehicles": 5,
+      "capacity": 120
+    },
+    {
+      "id": "carrier_1",
+      "name": "Saurashtra Freight",
+      "depot": "Rajkot",
+      "n_vehicles": 5,
+      "capacity": 120
+    },
+    {
+      "id": "carrier_2",
+      "name": "Tapi Logistics",
+      "depot": "Surat",
+      "n_vehicles": 5,
+      "capacity": 120
+    }
+  ],
+  "requests": [
+    {
+      "id": "carrier_0-R0",
+      "owner": "carrier_0",
+      "hub": "Anand",
+      "demand": 27,
+      "ready": 0,
+      "due": 725
+    },
+    {
+      "id": "carrier_0-R1",
+      "owner": "carrier_0",
+      "hub": "Mehsana",
+      "demand": 16,
+      "ready": 0,
+      "due": 879
+    },
+    {
+      "id": "carrier_0-R2",
+      "owner": "carrier_0",
+      "hub": "Anand",
+      "demand": 12,
+      "ready": 240,
+      "due": 855
+    },
+    {
+      "id": "carrier_0-R3",
+      "owner": "carrier_0",
+      "hub": "Anand",
+      "demand": 24,
+      "ready": 0,
+      "due": 858
+    },
+    {
+      "id": "carrier_0-R4",
+      "owner": "carrier_0",
+      "hub": "Anand",
+      "demand": 44,
+      "ready": 0,
+      "due": 814
+    },
+    {
+      "id": "carrier_0-R5",
+      "owner": "carrier_0",
+      "hub": "Mehsana",
+      "demand": 27,
+      "ready": 240,
+      "due": 843
+    },
+    {
+      "id": "carrier_0-R6",
+      "owner": "carrier_0",
+      "hub": "Mehsana",
+      "demand": 31,
+      "ready": 240,
+      "due": 982
+    },
+    {
+      "id": "carrier_0-R7",
+      "owner": "carrier_0",
+      "hub": "Mehsana",
+      "demand": 31,
+      "ready": 0,
+      "due": 652
+    },
+    {
+      "id": "carrier_0-R8",
+      "owner": "carrier_0",
+      "hub": "Anand",
+      "demand": 16,
+      "ready": 240,
+      "due": 1023
+    },
+    {
+      "id": "carrier_0-R9",
+      "owner": "carrier_0",
+      "hub": "Vadodara",
+      "demand": 12,
+      "ready": 120,
+      "due": 955
+    },
+    {
+      "id": "carrier_0-R10",
+      "owner": "carrier_0",
+      "hub": "Anand",
+      "demand": 15,
+      "ready": 240,
+      "due": 1122
+    },
+    {
+      "id": "carrier_0-R11",
+      "owner": "carrier_0",
+      "hub": "Jamnagar",
+      "demand": 22,
+      "ready": 120,
+      "due": 755
+    },
+    {
+      "id": "carrier_0-R12",
+      "owner": "carrier_0",
+      "hub": "Surat",
+      "demand": 28,
+      "ready": 0,
+      "due": 640
+    },
+    {
+      "id": "carrier_0-R13",
+      "owner": "carrier_0",
+      "hub": "Bhavnagar",
+      "demand": 34,
+      "ready": 0,
+      "due": 742
+    },
+    {
+      "id": "carrier_1-R0",
+      "owner": "carrier_1",
+      "hub": "Ahmedabad",
+      "demand": 20,
+      "ready": 120,
+      "due": 909
+    },
+    {
+      "id": "carrier_1-R1",
+      "owner": "carrier_1",
+      "hub": "Bhavnagar",
+      "demand": 27,
+      "ready": 0,
+      "due": 636
+    },
+    {
+      "id": "carrier_1-R2",
+      "owner": "carrier_1",
+      "hub": "Junagadh",
+      "demand": 20,
+      "ready": 0,
+      "due": 836
+    },
+    {
+      "id": "carrier_1-R3",
+      "owner": "carrier_1",
+      "hub": "Ahmedabad",
+      "demand": 45,
+      "ready": 120,
+      "due": 832
+    },
+    {
+      "id": "carrier_1-R4",
+      "owner": "carrier_1",
+      "hub": "Bhavnagar",
+      "demand": 24,
+      "ready": 0,
+      "due": 616
+    },
+    {
+      "id": "carrier_1-R5",
+      "owner": "carrier_1",
+      "hub": "Bhavnagar",
+      "demand": 27,
+      "ready": 240,
+      "due": 873
+    },
+    {
+      "id": "carrier_1-R6",
+      "owner": "carrier_1",
+      "hub": "Junagadh",
+      "demand": 23,
+      "ready": 120,
+      "due": 975
+    },
+    {
+      "id": "carrier_1-R7",
+      "owner": "carrier_1",
+      "hub": "Ahmedabad",
+      "demand": 19,
+      "ready": 240,
+      "due": 975
+    },
+    {
+      "id": "carrier_1-R8",
+      "owner": "carrier_1",
+      "hub": "Junagadh",
+      "demand": 45,
+      "ready": 0,
+      "due": 875
+    },
+    {
+      "id": "carrier_1-R9",
+      "owner": "carrier_1",
+      "hub": "Bhavnagar",
+      "demand": 35,
+      "ready": 240,
+      "due": 1025
+    },
+    {
+      "id": "carrier_1-R10",
+      "owner": "carrier_1",
+      "hub": "Junagadh",
+      "demand": 42,
+      "ready": 0,
+      "due": 852
+    },
+    {
+      "id": "carrier_1-R11",
+      "owner": "carrier_1",
+      "hub": "Surat",
+      "demand": 17,
+      "ready": 0,
+      "due": 678
+    },
+    {
+      "id": "carrier_1-R12",
+      "owner": "carrier_1",
+      "hub": "Vadodara",
+      "demand": 14,
+      "ready": 240,
+      "due": 1037
+    },
+    {
+      "id": "carrier_1-R13",
+      "owner": "carrier_1",
+      "hub": "Bharuch",
+      "demand": 43,
+      "ready": 240,
+      "due": 968
+    },
+    {
+      "id": "carrier_2-R0",
+      "owner": "carrier_2",
+      "hub": "Bharuch",
+      "demand": 44,
+      "ready": 0,
+      "due": 736
+    },
+    {
+      "id": "carrier_2-R1",
+      "owner": "carrier_2",
+      "hub": "Vadodara",
+      "demand": 28,
+      "ready": 0,
+      "due": 822
+    },
+    {
+      "id": "carrier_2-R2",
+      "owner": "carrier_2",
+      "hub": "Bhavnagar",
+      "demand": 10,
+      "ready": 240,
+      "due": 974
+    },
+    {
+      "id": "carrier_2-R3",
+      "owner": "carrier_2",
+      "hub": "Bhavnagar",
+      "demand": 29,
+      "ready": 0,
+      "due": 859
+    },
+    {
+      "id": "carrier_2-R4",
+      "owner": "carrier_2",
+      "hub": "Bhavnagar",
+      "demand": 33,
+      "ready": 0,
+      "due": 682
+    },
+    {
+      "id": "carrier_2-R5",
+      "owner": "carrier_2",
+      "hub": "Bharuch",
+      "demand": 41,
+      "ready": 120,
+      "due": 729
+    },
+    {
+      "id": "carrier_2-R6",
+      "owner": "carrier_2",
+      "hub": "Bharuch",
+      "demand": 29,
+      "ready": 120,
+      "due": 842
+    },
+    {
+      "id": "carrier_2-R7",
+      "owner": "carrier_2",
+      "hub": "Bharuch",
+      "demand": 15,
+      "ready": 0,
+      "due": 643
+    },
+    {
+      "id": "carrier_2-R8",
+      "owner": "carrier_2",
+      "hub": "Anand",
+      "demand": 44,
+      "ready": 0,
+      "due": 664
+    },
+    {
+      "id": "carrier_2-R9",
+      "owner": "carrier_2",
+      "hub": "Bhavnagar",
+      "demand": 45,
+      "ready": 240,
+      "due": 924
+    },
+    {
+      "id": "carrier_2-R10",
+      "owner": "carrier_2",
+      "hub": "Vadodara",
+      "demand": 23,
+      "ready": 240,
+      "due": 1116
+    },
+    {
+      "id": "carrier_2-R11",
+      "owner": "carrier_2",
+      "hub": "Bhavnagar",
+      "demand": 35,
+      "ready": 120,
+      "due": 911
+    },
+    {
+      "id": "carrier_2-R12",
+      "owner": "carrier_2",
+      "hub": "Mehsana",
+      "demand": 17,
+      "ready": 240,
+      "due": 966
+    },
+    {
+      "id": "carrier_2-R13",
+      "owner": "carrier_2",
+      "hub": "Bhavnagar",
+      "demand": 31,
+      "ready": 0,
+      "due": 610
+    }
+  ]
+}
