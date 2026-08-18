@@ -2,6 +2,7 @@ services:
   - type: web
     name: setu-backend
     env: docker
+    dockerContext: .
     dockerfilePath: ./backend/Dockerfile
     envVars:
       - key: PYTHON_VERSION
