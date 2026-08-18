@@ -1,10 +1,9 @@
 services:
   - type: web
     name: setu-backend
-    env: python
-    rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn src.main:app --host 0.0.0.0 --port $PORT
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    envVars:
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.0

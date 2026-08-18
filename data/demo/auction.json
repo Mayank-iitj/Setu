@@ -1,0 +1,120 @@
+{
+  "bundles": [
+    {
+      "id": "BND-0",
+      "request_ids": [
+        "carrier_0-R12",
+        "carrier_0-R13"
+      ]
+    },
+    {
+      "id": "BND-1",
+      "request_ids": [
+        "carrier_0-R11",
+        "carrier_0-R10"
+      ]
+    },
+    {
+      "id": "BND-S2",
+      "request_ids": [
+        "carrier_0-R12"
+      ]
+    },
+    {
+      "id": "BND-S3",
+      "request_ids": [
+        "carrier_0-R13"
+      ]
+    },
+    {
+      "id": "BND-S4",
+      "request_ids": [
+        "carrier_0-R11"
+      ]
+    },
+    {
+      "id": "BND-S5",
+      "request_ids": [
+        "carrier_0-R10"
+      ]
+    }
+  ],
+  "bids": [
+    {
+      "carrier_id": "carrier_1",
+      "bundle_id": "BND-0",
+      "price": 8339.07
+    },
+    {
+      "carrier_id": "carrier_1",
+      "bundle_id": "BND-1",
+      "price": 9222.71
+    },
+    {
+      "carrier_id": "carrier_1",
+      "bundle_id": "BND-S2",
+      "price": 4016.82
+    },
+    {
+      "carrier_id": "carrier_1",
+      "bundle_id": "BND-S3",
+      "price": 4189.8
+    },
+    {
+      "carrier_id": "carrier_1",
+      "bundle_id": "BND-S4",
+      "price": 5607.03
+    },
+    {
+      "carrier_id": "carrier_1",
+      "bundle_id": "BND-S5",
+      "price": 1034.51
+    },
+    {
+      "carrier_id": "carrier_2",
+      "bundle_id": "BND-0",
+      "price": 4000.0
+    },
+    {
+      "carrier_id": "carrier_2",
+      "bundle_id": "BND-1",
+      "price": 30324.91
+    },
+    {
+      "carrier_id": "carrier_2",
+      "bundle_id": "BND-S2",
+      "price": 250.0
+    },
+    {
+      "carrier_id": "carrier_2",
+      "bundle_id": "BND-S3",
+      "price": 250.0
+    },
+    {
+      "carrier_id": "carrier_2",
+      "bundle_id": "BND-S4",
+      "price": 25029.19
+    },
+    {
+      "carrier_id": "carrier_2",
+      "bundle_id": "BND-S5",
+      "price": 5193.84
+    }
+  ],
+  "incumbent": {
+    "BND-0": 15414.07,
+    "BND-1": 25250.0,
+    "BND-S2": 13244.58,
+    "BND-S3": 9381.02,
+    "BND-S4": 25000.0,
+    "BND-S5": 250.0
+  },
+  "awards": {
+    "BND-S2": "carrier_2",
+    "BND-S3": "carrier_2",
+    "BND-S4": "carrier_1"
+  },
+  "total_gain": 41518.57,
+  "status": "OPTIMAL",
+  "releasing_carrier": "carrier_0"
+}
