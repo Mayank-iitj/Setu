@@ -8,3 +8,13 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.0
+
+  - type: web
+    name: setu-backend-core
+    env: node
+    rootDir: backend-core
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: NODE_VERSION
+        value: 20.x

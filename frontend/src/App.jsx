@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Show, RedirectToSignIn, useAuth } from '@clerk/react';
+import { SignedIn, SignedOut, RedirectToSignIn, useAuth } from '@clerk/react';
 import LandingPage from './LandingPage';
 import Dashboard from './pages/Dashboard';
 import AboutPage from './pages/AboutPage';
@@ -41,24 +41,24 @@ export default function App() {
           {/* Protected Role Selection Route */}
           <Route path="/select-role" element={
             <>
-              <Show when="signed-in">
+              <SignedIn>
                 <RoleSelectionPage />
-              </Show>
-              <Show when="signed-out">
+              </SignedIn>
+              <SignedOut>
                 <RedirectToSignIn />
-              </Show>
+              </SignedOut>
             </>
           } />
 
           {/* Protected Routes */}
           <Route path="/app/*" element={
             <>
-              <Show when="signed-in">
+              <SignedIn>
                 <Dashboard />
-              </Show>
-              <Show when="signed-out">
+              </SignedIn>
+              <SignedOut>
                 <RedirectToSignIn />
-              </Show>
+              </SignedOut>
             </>
           } />
           
